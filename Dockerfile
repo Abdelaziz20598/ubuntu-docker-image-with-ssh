@@ -7,28 +7,29 @@ RUN apt-get clean\
 #--disabled-password option to prevent a password prompt.--disabled-password: This option explicitly disables the password for the user, meaning the user cannot log in with a password (but can still be used by other means, like SSH keys)
 #RUN adduser --disabled-password -s /bin/bash  ansible
 RUN useradd -m -s /bin/bash ansible
-RUN passwd -d ansible 
+#RUN passwd -d ansible 
 #-d for not setting pass
 #RUN passwd ansible
-#RUN echo "12345" | chpasswd
+RUN echo "ansible:12345" | chpasswd
 
 #RUN service ssh start ,, caanot start ssh while build
 #RUN service ssh enable
 #RUN service ssh status
-# Disable password authentication for SSH
-RUN sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
-RUN sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
+# Disable password authentication and enable public key authentication for SSH
+#RUN sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
+#   && sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+    #\&& sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+    #&& sed -i 's/^PubkeyAuthentication no/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
 # Set up SSH key authentication (replace with your public key)
-RUN mkdir -p /home/ansible/.ssh && \
-    echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDcne/qqSTdJgtCYR49g4UYtKdxhGxzE2AJShz5RxTeKn8pHeqf9BghsWDu5A7A4lQBEmhtX3kwenX0/jzZlJqFdtY2OFDaIFxnwmz2rE4XUBFTBqiKT/eKLFoZMT9saOruHNvMpahwEjpirCTAd9pB0TBuy71pxtCuhnJqmH2dbN1/mPSkLn0n5BQfKqiFaJL8o+/raHmEsh/B8N+NNU2d1qfxLUFK0upF73EfJh8njaXsW3u08z+RA9xs20OJ8b8aggRDZRz5KErEoj/+R4uhzOT91L2hivM/XxvYbSiB9DnBpLwhjDkQ8AM5vmqSGE0Iql+4Qgv562u+QtmgkWwFj7Cyie0bK7rDDRQqTrRsid0OEPONfaJQ0VMeFBO+3w7iKhnEnlRiED+wQRdfWObEFMYO6LpxfowmLDkEo/hTBzM8gV9BE/pC3oppnWhZp0dP/nLAyGWSMqIoy98afRSdRpYuFpOAm980yWqJtUhribVQTlcYZ5tDu0wR/gXBYT8= abdelaziz@ubuntu20" > /home/ansible/.ssh/authorized_keys && \
-    chown -R ansible:ansible /home/ansible/.ssh && \
-    chmod 700 /home/ansible/.ssh && \
-    chmod 600 /home/ansible/.ssh/authorized_keys
+#RUN mkdir -p /home/ansible/.ssh && \
+#echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDcne/qqSTdJgtCYR49g4UYtKdxhGxzE2AJShz5RxTeKn8pHeqf9BghsWDu5A7A4lQBEmhtX3kwenX0/jzZlJqFdtY2OFDaIFxnwmz2rE4XUBFTBqiKT/eKLFoZMT9saOruHNvMpahwEjpirCTAd9pB0TBuy71pxtCuhnJqmH2dbN1/mPSkLn0n5BQfKqiFaJL8o+/raHmEsh/B8N+NNU2d1qfxLUFK0upF73EfJh8njaXsW3u08z+RA9xs20OJ8b8aggRDZRz5KErEoj/+R4uhzOT91L2hivM/XxvYbSiB9DnBpLwhjDkQ8AM5vmqSGE0Iql+4Qgv562u+QtmgkWwFj7Cyie0bK7rDDRQqTrRsid0OEPONfaJQ0VMeFBO+3w7iKhnEnlRiED+wQRdfWObEFMYO6LpxfowmLDkEo/hTBzM8gV9BE/pC3oppnWhZp0dP/nLAyGWSMqIoy98afRSdRpYuFpOAm980yWqJtUhribVQTlcYZ5tDu0wR/gXBYT8= abdelaziz@ubuntu20" > /home/ansible/.ssh/authorized_keys && \
+#chown -R ansible:ansible /home/ansible/.ssh && \
+#chmod 700 /home/ansible/.ssh && \
+#chmod 600 /home/ansible/.ssh/authorized_keys
 
-
-#  Ensure the SSH directory is correctly created
+#Ensure the SSH directory is correctly created
 RUN mkdir /var/run/sshd
 
 # Expose port 22 for SSH
